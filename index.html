@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#7ec8ff">
+<title>Słówka – gra dla dzieci</title>
+<meta name="description" content="Prosta gra w zgadywanie 5-literowych polskich słów dla dzieci.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2358cc02'/><text x='50' y='73' font-size='62' text-anchor='middle' font-family='sans-serif' fill='white'>A</text></svg>">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <button id="help-btn" class="round-btn" aria-label="Jak grać?" title="Jak grać?">?</button>
+  <h1>Słówka</h1>
+  <div class="score" title="Wygrane gry"><span aria-hidden="true">🏆</span><span id="wins">0</span></div>
+</header>
+
+<main>
+  <div id="board" class="board" role="grid" aria-label="Plansza gry"></div>
+
+  <p id="message" class="message" role="status" aria-live="polite"></p>
+
+  <div id="keyboard" class="keyboard" aria-label="Klawiatura"></div>
+</main>
+
+<!-- Panel końca gry -->
+<div id="endcard" class="overlay" hidden>
+  <div class="card">
+    <div id="end-emoji" class="end-emoji" aria-hidden="true">🎉</div>
+    <h2 id="end-title">Brawo!</h2>
+    <p id="end-text"></p>
+    <button id="again-btn" class="big-btn">Gramy jeszcze raz</button>
+  </div>
+</div>
+
+<!-- Panel pomocy -->
+<div id="helpcard" class="overlay" hidden>
+  <div class="card">
+    <h2>Jak grać?</h2>
+    <ul class="help-list">
+      <li><span class="mini tile-correct">K</span> Ta litera jest w słowie i stoi w dobrym miejscu.</li>
+      <li><span class="mini tile-present">O</span> Ta litera jest w słowie, ale w innym miejscu.</li>
+      <li><span class="mini tile-absent">T</span> Tej litery nie ma w słowie.</li>
+    </ul>
+    <p class="help-note">Masz 6 prób, żeby zgadnąć 5-literowe słowo.</p>
+    <button id="help-close" class="big-btn">Rozumiem!</button>
+  </div>
+</div>
+
+<script src="words.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+/* ---------- podstawy ---------- */
+:root{
+  --green:#58cc02;  --green-d:#46a302;
+  --yellow:#ffc800; --yellow-d:#e0af00;
+  --gray:#b3bcc9;   --gray-d:#98a3b3;
+  --key:#ffffff;    --key-sh:#d3dae4;
+  --ink:#2c3a4b;
+  --tile-size: clamp(46px, 15vw, 66px);
+}
+
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+
+html,body{height:100%}
+
+body{
+  margin:0;
+  font-family:"Comic Sans MS","Comic Neue","Trebuchet MS",system-ui,sans-serif;
+  color:var(--ink);
+  background:linear-gradient(180deg,#bfe6ff 0%,#eaf6ff 45%,#fff7e6 100%);
+  background-attachment:fixed;
+  display:flex; flex-direction:column;
+  min-height:100dvh;
+  overflow-x:hidden;
+  user-select:none;
+}
+
+/* ---------- górny pasek ---------- */
+.topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:8px; padding:10px 14px calc(6px + env(safe-area-inset-top,0px));
+}
+.topbar h1{
+  margin:0; font-size:clamp(24px,7vw,34px); letter-spacing:1px;
+  color:#0f5f9e; text-shadow:0 2px 0 #fff;
+}
+.round-btn{
+  width:42px; height:42px; flex:0 0 auto;
+  border:0; border-radius:50%;
+  background:#fff; color:#0f5f9e;
+  font:inherit; font-size:22px; font-weight:bold;
+  box-shadow:0 3px 0 var(--key-sh); cursor:pointer;
+}
+.round-btn:active{transform:translateY(2px); box-shadow:0 1px 0 var(--key-sh)}
+.score{
+  display:flex; align-items:center; gap:5px;
+  min-width:42px; height:42px; padding:0 12px;
+  border-radius:21px; background:#fff;
+  font-size:19px; font-weight:bold;
+  box-shadow:0 3px 0 var(--key-sh);
+}
+
+main{
+  flex:1;
+  display:flex; flex-direction:column; align-items:center;
+  gap:6px; padding:0 8px calc(10px + env(safe-area-inset-bottom,0px));
+}
+/* auto-marginesy (patrz .board i .message niżej) wyśrodkowują planszę
+   w wolnej przestrzeni, a klawiaturę trzymają przy dolnej krawędzi */
+
+/* ---------- plansza ---------- */
+.board{display:grid; grid-template-rows:repeat(6,auto); gap:7px; margin-top:auto}
+.row{display:grid; grid-template-columns:repeat(5,var(--tile-size)); gap:7px}
+
+.tile{
+  width:var(--tile-size); height:var(--tile-size);
+  display:flex; align-items:center; justify-content:center;
+  font-size:calc(var(--tile-size) * .55); font-weight:bold; line-height:1;
+  text-transform:uppercase;
+  background:#fff; border:3px solid #dbe3ec; border-radius:14px;
+  color:var(--ink);
+  transition:transform .1s ease, border-color .15s ease;
+}
+.tile.filled{border-color:#9fb3c8; animation:pop .12s ease}
+@keyframes pop{50%{transform:scale(1.1)}}
+
+.tile.flip{animation:flip .5s ease forwards}
+@keyframes flip{
+  0%{transform:rotateX(0)}
+  45%{transform:rotateX(90deg)}
+  100%{transform:rotateX(0)}
+}
+
+.tile-correct{background:var(--green); border-color:var(--green-d); color:#fff}
+.tile-present{background:var(--yellow); border-color:var(--yellow-d); color:#fff}
+.tile-absent {background:var(--gray);  border-color:var(--gray-d);  color:#fff}
+
+.row.shake{animation:shake .4s}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-9px)} 40%{transform:translateX(9px)}
+  60%{transform:translateX(-6px)} 80%{transform:translateX(6px)}
+}
+.tile.jump{animation:jump .55s ease}
+@keyframes jump{
+  0%,100%{transform:translateY(0)}
+  35%{transform:translateY(-22px)}
+  60%{transform:translateY(0)}
+  75%{transform:translateY(-8px)}
+}
+
+/* ---------- komunikat ---------- */
+.message{
+  margin:0 0 auto; min-height:26px;
+  font-size:clamp(15px,4.5vw,20px); font-weight:bold; color:#0f5f9e;
+  text-align:center;
+}
+
+/* ---------- klawiatura ---------- */
+.keyboard{display:flex; flex-direction:column; gap:6px; width:100%; max-width:560px}
+.krow{display:flex; gap:5px; justify-content:center}
+
+.key{
+  flex:1 1 0; min-width:0; height:clamp(42px,9.5vw,52px);
+  border:0; border-radius:11px;
+  background:var(--key); color:var(--ink);
+  font-family:inherit; font-size:clamp(16px,4.6vw,21px); font-weight:bold;
+  text-transform:uppercase;
+  box-shadow:0 3px 0 var(--key-sh);
+  cursor:pointer;
+  transition:background .2s ease, color .2s ease;
+}
+.key:active{transform:translateY(2px); box-shadow:0 1px 0 var(--key-sh)}
+.key.correct{background:var(--green); color:#fff; box-shadow:0 3px 0 var(--green-d)}
+.key.present{background:var(--yellow); color:#fff; box-shadow:0 3px 0 var(--yellow-d)}
+.key.absent {background:var(--gray);  color:#eef2f7; box-shadow:0 3px 0 var(--gray-d)}
+
+.key-wide{flex:2.4 1 0; font-size:clamp(14px,3.6vw,17px)}
+.key-enter{background:var(--green); color:#fff; box-shadow:0 3px 0 var(--green-d)}
+.key-del{background:#ff9f43; color:#fff; box-shadow:0 3px 0 #e08526}
+
+/* ---------- panele ---------- */
+.overlay{
+  position:fixed; inset:0; z-index:10;
+  display:flex; align-items:center; justify-content:center; padding:20px;
+  background:rgba(20,40,60,.45);
+  animation:fade .2s ease;
+}
+.overlay[hidden]{display:none}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+
+.card{
+  background:#fff; border-radius:26px; padding:26px 22px;
+  width:100%; max-width:380px; text-align:center;
+  box-shadow:0 12px 30px rgba(0,0,0,.25);
+  animation:rise .28s cubic-bezier(.2,1.3,.5,1);
+}
+@keyframes rise{from{transform:translateY(24px) scale(.94); opacity:0}}
+.card h2{margin:0 0 10px; font-size:28px; color:#0f5f9e}
+.card p{margin:0 0 18px; font-size:18px; line-height:1.45}
+.end-emoji{font-size:56px; line-height:1; margin-bottom:6px}
+
+.solution{
+  display:inline-block; margin-top:4px; padding:4px 14px;
+  background:var(--green); color:#fff; border-radius:12px;
+  font-size:26px; font-weight:bold; text-transform:uppercase; letter-spacing:2px;
+}
+
+.big-btn{
+  width:100%; padding:15px; border:0; border-radius:16px;
+  background:var(--green); color:#fff;
+  font-family:inherit; font-size:20px; font-weight:bold;
+  box-shadow:0 4px 0 var(--green-d); cursor:pointer;
+}
+.big-btn:active{transform:translateY(3px); box-shadow:0 1px 0 var(--green-d)}
+
+.help-list{list-style:none; margin:0 0 14px; padding:0; text-align:left}
+.help-list li{
+  display:flex; align-items:center; gap:12px;
+  margin-bottom:12px; font-size:16px; line-height:1.35;
+}
+.mini{
+  flex:0 0 auto; width:42px; height:42px; border-radius:11px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px; font-weight:bold; color:#fff;
+}
+.help-note{font-size:16px; color:#5b6b7d}
+
+/* ---------- konfetti ---------- */
+.confetti{
+  position:fixed; top:-14px; width:11px; height:16px; border-radius:3px;
+  z-index:20; pointer-events:none;
+  animation:fall linear forwards;
+}
+@keyframes fall{
+  to{transform:translateY(110vh) rotate(720deg); opacity:.9}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important; animation-iteration-count:1 !important}
+}
+
+/* niskie ekrany: zmniejsz kafelki, żeby wszystko się mieściło */
+@media (max-height:700px){
+  :root{--tile-size:clamp(38px,11vw,52px)}
+  .topbar{padding-top:6px}
+}
