@@ -1,12 +1,12 @@
 /* ==========================================================
    Słówka — wordle po polsku, dla dzieci
+   Słowa mają 3, 4 albo 5 liter; nad planszą widać kategorię.
    ========================================================== */
 (function () {
   "use strict";
 
-  var ROWS = 6;          // ile prób
-  var LEN  = 5;          // ile liter
-  var WORDS = window.WORDS || [];
+  var ROWS = 6;                        // ile prób
+  var WORDS = window.WORDS || [];      // lista { slowo, kategoria }
 
   // Polski alfabet, po kolei — dzieciom łatwiej niż QWERTY.
   var KEY_ROWS = [
@@ -17,14 +17,19 @@
   ];
   var LETTERS = KEY_ROWS.join(",").split(",").join("");
 
+  var mainEl   = document.querySelector("main");
+  var topbar   = document.querySelector(".topbar");
   var board    = document.getElementById("board");
   var keyboard = document.getElementById("keyboard");
   var message  = document.getElementById("message");
+  var hintEl   = document.getElementById("hint");
   var winsEl   = document.getElementById("wins");
   var endcard  = document.getElementById("endcard");
   var helpcard = document.getElementById("helpcard");
 
-  var secret = "";
+  var secret = "";       // szukane słowo, WIELKIMI literami
+  var category = "";     // kategoria szukanego słowa
+  var LEN = 5;           // długość szukanego słowa (3, 4 albo 5)
   var guess = [];        // litery wpisane w bieżącym wierszu
   var rowIndex = 0;
   var locked = true;     // blokada w czasie animacji i po końcu gry
@@ -46,10 +51,67 @@
     try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
   }
 
+  /* ---------- dopasowanie do okna ----------
+     Na ekranie muszą się zmieścić naraz: 6 wierszy planszy
+     i 5 rzędów klawiatury. Zamiast zgadywać w CSS, mierzymy
+     realne wolne miejsce i dzielimy je między jedno i drugie.
+     Dzięki temu w niskim oknie plansza nie robi się „kropkami”,
+     a klawiatura nie ucieka poza ekran. */
+  var KB_GAP = 6, KEY_MAX = 52, KEY_MIN = 30, TILE_MAX = 76;
+
+  function fitBoard() {
+    var doc = document.documentElement;
+    var st = getComputedStyle(mainEl);
+    var gap = parseFloat(st.rowGap) || 6;
+    var padB = parseFloat(st.paddingBottom) || 0;
+    var poziomo = st.flexDirection === "row";
+
+    // przy długich słowach ciaśniejsze odstępy — kafelki wychodzą wtedy większe
+    var tileGap = LEN > 6 ? 4 : 7;
+    board.style.setProperty("--tile-gap", tileGap + "px");
+
+    var ponizejPaska = doc.clientHeight - topbar.offsetHeight - padB;
+    var naPlansze = ponizejPaska - hintEl.offsetHeight - message.offsetHeight;
+    var keyH, boardH, boardW;
+
+    if (poziomo) {
+      // plansza obok klawiatury: każda ma całą wysokość dla siebie
+      keyH = Math.max(KEY_MIN, Math.min(KEY_MAX,
+             Math.floor((ponizejPaska - KB_GAP * 4) / 5)));
+      boardW = doc.clientWidth - keyboard.offsetWidth - 40;
+      boardH = naPlansze - gap * 2 - 4;
+    } else {
+      var wolne = Math.max(160, naPlansze - gap * 3 - 4);
+      var keyChce = Math.min(KEY_MAX, Math.max(40, doc.clientWidth * 0.105));
+      boardW = doc.clientWidth - 24;
+
+      // Ile plansza naprawdę potrzebuje. Przy długim słowie kafelek ogranicza
+      // szerokość, nie wysokość — plansza jest wtedy niższa, niż mogłaby być.
+      var limitWys = Math.max(120, wolne - (keyChce * 5 + KB_GAP * 4));
+      var kafelek = Math.floor(Math.min(
+        TILE_MAX,
+        (boardW - (LEN - 1) * tileGap) / LEN,
+        (limitWys - 5 * tileGap) / 6
+      ));
+      boardH = kafelek * 6 + 5 * tileGap;
+
+      // Czego plansza nie zużyła, dostaje klawiatura — większe klawisze
+      // zamiast pustej dziury na środku ekranu.
+      keyH = Math.max(KEY_MIN, Math.min(KEY_MAX,
+             Math.floor((wolne - boardH - KB_GAP * 4) / 5)));
+    }
+
+    keyboard.style.setProperty("--key-h", keyH + "px");
+    board.style.setProperty("--board-w", Math.max(90, boardW) + "px");
+    board.style.setProperty("--board-h", Math.max(90, boardH) + "px");
+  }
+
   /* ---------- budowa planszy i klawiatury ---------- */
   function buildBoard() {
     board.innerHTML = "";
+    board.style.setProperty("--cols", LEN);
     tiles = [];
+
     for (var r = 0; r < ROWS; r++) {
       var row = document.createElement("div");
       row.className = "row";
@@ -114,23 +176,27 @@
     var recent = load("slowka.recent", []);
     if (!Array.isArray(recent)) recent = [];
 
-    var pool = WORDS.filter(function (w) { return recent.indexOf(w) === -1; });
+    var pool = WORDS.filter(function (w) { return recent.indexOf(w.slowo) === -1; });
     if (pool.length === 0) {
       pool = WORDS.slice();
       recent = [];
     }
 
-    var word = pool[Math.floor(Math.random() * pool.length)];
-    recent.push(word);
+    var wybrane = pool[Math.floor(Math.random() * pool.length)];
+    recent.push(wybrane.slowo);
     // pamiętamy ostatnią połowę listy, żeby słowa szybko się nie powtarzały
     while (recent.length > Math.floor(WORDS.length / 2)) recent.shift();
     save("slowka.recent", recent);
 
-    return word.toUpperCase();
+    return wybrane;
   }
 
   function newGame() {
-    secret = pickWord();
+    var wybrane = pickWord();
+    secret = wybrane.slowo.toUpperCase();
+    category = wybrane.kategoria;
+    LEN = secret.length;
+
     guess = [];
     rowIndex = 0;
     locked = false;
@@ -139,8 +205,10 @@
     buildBoard();
     Object.keys(keyEls).forEach(function (ch) { keyEls[ch].className = "key"; });
 
+    hintEl.textContent = category;
     say("");
     endcard.hidden = true;
+    fitBoard();
   }
 
   /* ---------- wpisywanie ---------- */
@@ -284,7 +352,8 @@
       "🎉",
       praise[Math.floor(Math.random() * praise.length)],
       proby === 1 ? "Udało się za pierwszym razem!" : "Udało się w " + proby + " próbach!",
-      900
+      900,
+      secret
     );
   }
 
@@ -299,13 +368,12 @@
 
       var box = document.getElementById("end-text");
       box.textContent = text;
-      if (solution) {
-        var span = document.createElement("span");
-        span.className = "solution";
-        span.textContent = solution;
-        box.appendChild(document.createElement("br"));
-        box.appendChild(span);
-      }
+
+      var span = document.createElement("span");
+      span.className = "solution";
+      span.textContent = solution;
+      box.appendChild(document.createElement("br"));
+      box.appendChild(span);
 
       endcard.hidden = false;
       document.getElementById("again-btn").focus();
@@ -368,6 +436,9 @@
     helpcard.hidden = true;
   });
 
+  window.addEventListener("resize", fitBoard);
+  window.addEventListener("orientationchange", fitBoard);
+
   /* ---------- start ---------- */
   winsEl.textContent = load("slowka.wins", 0);
   buildKeyboard();
@@ -378,4 +449,6 @@
   } else {
     newGame();
   }
+
+  fitBoard();
 })();

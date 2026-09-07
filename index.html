@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#7ec8ff">
 <title>Słówka – gra dla dzieci</title>
-<meta name="description" content="Prosta gra w zgadywanie 5-literowych polskich słów dla dzieci.">
+<meta name="description" content="Prosta gra w zgadywanie krótkich polskich słów dla dzieci.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2358cc02'/><text x='50' y='73' font-size='62' text-anchor='middle' font-family='sans-serif' fill='white'>A</text></svg>">
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -18,9 +18,13 @@
 </header>
 
 <main>
-  <div id="board" class="board" role="grid" aria-label="Plansza gry"></div>
+  <div class="play">
+    <p id="hint" class="hint" aria-live="polite"></p>
 
-  <p id="message" class="message" role="status" aria-live="polite"></p>
+    <div id="board" class="board" role="grid" aria-label="Plansza gry"></div>
+
+    <p id="message" class="message" role="status" aria-live="polite"></p>
+  </div>
 
   <div id="keyboard" class="keyboard" aria-label="Klawiatura"></div>
 </main>
@@ -39,12 +43,16 @@
 <div id="helpcard" class="overlay" hidden>
   <div class="card">
     <h2>Jak grać?</h2>
+    <p class="help-note">
+      Na górze jest podpowiedź, o czym jest słowo.
+      Tyle jest okienek, ile liter ma słowo.
+    </p>
     <ul class="help-list">
       <li><span class="mini tile-correct">K</span> Ta litera jest w słowie i stoi w dobrym miejscu.</li>
       <li><span class="mini tile-present">O</span> Ta litera jest w słowie, ale w innym miejscu.</li>
       <li><span class="mini tile-absent">T</span> Tej litery nie ma w słowie.</li>
     </ul>
-    <p class="help-note">Masz 6 prób, żeby zgadnąć 5-literowe słowo.</p>
+    <p class="help-note">Masz 6 prób.</p>
     <button id="help-close" class="big-btn">Rozumiem!</button>
   </div>
 </div>
