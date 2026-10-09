@@ -37,6 +37,7 @@ Pure static HTML/CSS/JS — no backend, no build step.
 - **Every word is a plain base form** a preschooler knows — no diminutives ("koza", never
   "kózka"), and nothing ambiguous whose category would mislead.
 - A word won't repeat until roughly half the list has been played.
+- **🏠 in the top-left corner** goes back to the list of all games.
 - Trophy counter in the corner, confetti on a win, and a friendly "Nie szkodzi!" on a loss
   that reveals the answer.
 - **No double-tap zoom.** `touch-action: manipulation` stops the phone from zooming in when a

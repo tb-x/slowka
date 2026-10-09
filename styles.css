@@ -61,6 +61,18 @@ body{
   box-shadow:0 3px 0 var(--key-sh);
 }
 
+/* ---------- domek: powrót do wszystkich gier ----------
+   Przypięty w lewym górnym rogu, nad panelami.
+   Pasek dostaje miejsce z lewej, żeby „?” stał obok domku, a nie pod nim. */
+#home{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:calc(10px + env(safe-area-inset-left,0px));z-index:50;
+  width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:#0f5f9e;background:#fff;
+  box-shadow:0 3px 0 var(--key-sh);touch-action:manipulation;-webkit-tap-highlight-color:transparent;text-decoration:none}
+#home svg{width:24px;height:24px}
+#home:active{transform:translateY(2px);box-shadow:0 1px 0 var(--key-sh)}
+.topbar{padding-left:calc(62px + env(safe-area-inset-left,0px))}
+/* niskie ekrany: pasek ma wtedy mniejszy odstęp od góry, domek idzie w górę razem z „?” */
+@media (max-height:700px){#home{top:calc(5px + env(safe-area-inset-top,0px))}}
+
 main{
   flex:1; min-height:0;
   display:flex; flex-direction:column; align-items:center;
