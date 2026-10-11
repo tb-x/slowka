@@ -6,7 +6,13 @@
 <meta name="theme-color" content="#7ec8ff">
 <title>Słówka – gra dla dzieci</title>
 <meta name="description" content="Prosta gra w zgadywanie krótkich polskich słów dla dzieci.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2358cc02'/><text x='50' y='73' font-size='62' text-anchor='middle' font-family='sans-serif' fill='white'>A</text></svg>">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-title" content="Słówka">
 <link rel="stylesheet" href="styles.css?v=2">
 </head>
 <body>
@@ -60,5 +66,15 @@
 
 <script src="words.js"></script>
 <script src="game.js"></script>
+<script>
+// Gra bez internetu: sw.js zapisuje tę stronę. Po wczytaniu wysyłamy mu listę wszystkich plików, których strona
+// użyła (skrypty, style), żeby też działały offline. Tam, gdzie się nie da (np. file://), po cichu nic nie robi.
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').then(() => navigator.serviceWorker.ready).then((reg) => {
+    const send = () => reg.active && reg.active.postMessage({ cache: [location.href, ...performance.getEntriesByType('resource').map((r) => r.name)] });
+    send(); setTimeout(send, 5000); setTimeout(send, 20000);
+  }).catch(() => {});
+}
+</script>
 </body>
 </html>

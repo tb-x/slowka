@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe6ff"/><stop offset="1" stop-color="#eaf6ff"/></linearGradient>
+  </defs>
+  <rect width="180" height="180" fill="url(#bg)"/>
+  <!-- two guesses at KOT: TOR (T is in the word, O is in place), then KOT, all green -->
+  <g transform="translate(0 6)" font-family="Verdana, Tahoma, sans-serif" font-weight="bold" font-size="30" text-anchor="middle" fill="#fff">
+    <rect x="17" y="30" width="44" height="48" rx="9" fill="#e0af00"/><rect x="17" y="26" width="44" height="46" rx="9" fill="#ffc800"/><text x="39" y="60">T</text>
+    <rect x="68" y="30" width="44" height="48" rx="9" fill="#46a302"/><rect x="68" y="26" width="44" height="46" rx="9" fill="#58cc02"/><text x="90" y="60">O</text>
+    <rect x="119" y="30" width="44" height="48" rx="9" fill="#98a3b3"/><rect x="119" y="26" width="44" height="46" rx="9" fill="#b3bcc9"/><text x="141" y="60">R</text>
+    <rect x="17" y="94" width="44" height="48" rx="9" fill="#46a302"/><rect x="17" y="90" width="44" height="46" rx="9" fill="#58cc02"/><text x="39" y="124">K</text>
+    <rect x="68" y="94" width="44" height="48" rx="9" fill="#46a302"/><rect x="68" y="90" width="44" height="46" rx="9" fill="#58cc02"/><text x="90" y="124">O</text>
+    <rect x="119" y="94" width="44" height="48" rx="9" fill="#46a302"/><rect x="119" y="90" width="44" height="46" rx="9" fill="#58cc02"/><text x="141" y="124">T</text>
+  </g>
+</svg>
